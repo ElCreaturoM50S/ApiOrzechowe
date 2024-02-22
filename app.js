@@ -13,7 +13,6 @@ app.get("/", (req,res)=>{res.send("KrychaGPT");})
 
 app.listen(PORT, () => {console.log("Serwer jest w: Watykanie")});
 
-
 //pamiętaj hemiku młody
 //wpisuj dobry adres strony
 //(localhost:2137/api/orzech)

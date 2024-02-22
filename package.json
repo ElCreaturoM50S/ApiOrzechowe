@@ -4,8 +4,7 @@
   "description": "Na prace do 30 listopada hehe",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mirosław Shrek i Krystyna Czatogtpsowki",
   "license": "ISC",
