@@ -4,7 +4,6 @@ const router = express.Router();
 
 //działa
 router.get("/orzech", async (req, res) => {
-    console.log("AS")
     res.json(orzech.list());
 })
 
@@ -16,9 +15,9 @@ router.post("/orzech", async (req,res)=> {
 //działa
 router.put("/orzech/:id", async (req,res)=>{
     req.body.id = parseInt(req.params.id);
-    req.json(orzech.update(req.body));
+    req.json(orzech.update(req));
 })
-
+ 
 //działa
 router.get("/orzech/:id", async (req, res)=>{
     res.json(orzech.get(req.params.id));
