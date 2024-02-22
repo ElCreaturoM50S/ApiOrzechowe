@@ -9,7 +9,7 @@ const mongoose = require("mongoose")
 
 //to jest polski program i wszystko ma byc po polsku
 const BazaDanych = "orzechy";
-const zrodlo = `mongodb://localhost:27017/${BazaDanych}`
+const zrodlo = `mongodb://127.0.0.1:27017/${BazaDanych}`
 
 mongoose.connect(zrodlo)
 const bd = mongoose.connect;
@@ -62,7 +62,7 @@ const save = async () => {
 
 const listaOrzechow = async () => {
     try {
-        const collection = db.collection("Siatka");
+        const collection = bd.collection("Siatka");
         const queryResult = collection.find({});
         const allOrzechy = await queryResult.toArray();
         res.send(allOrzechy);
@@ -107,7 +107,7 @@ const addNewOrzech = async (orzechDane) => {
     if(!isValidDocument(orzechDane)){
         return res.status(400).json({message:"Invalid document format"})
     }
-    const collection = db.collection("Siatka")
+    const collection = bd.collection("Siatka")
     const result = await collection.insertOne(orzechDane)
     if(!result.acknowladge) {
         return res.status(500).json({message:"Failed to add orzech"})
@@ -148,7 +148,7 @@ const aktualizacjaOrzecha = async (orzechDane) => {
             return res.status(400).json({message: "Invalid document format"})
         }
 
-        const collection = db.collection("Siatka")
+        const collection = bd.collection("Siatka")
         const orzechToUpdate = await collection.replaceOne({id:orzechId},orzechBodyUpdate)
     } catch(err){
         console.log(err)
@@ -173,7 +173,7 @@ const deleteOrzech = async (orzechId) => {
             return res.status(400).json({message: "Invalid ID format"})
         }
 
-        const collection = db.collection("Siatka")
+        const collection = bd.collection("Siatka")
         const orzechToDelete = await collection.deleteOne({id:orzechId})
         if(orzechToDelete.deletedCount === 0) {
             return res.status(404).json({message: "Document not found"})
@@ -187,7 +187,7 @@ const deleteOrzech = async (orzechId) => {
 
 process.on('SIGINT', ()=>{
     console.log("Zamykanie połączenia") ;
-    db.disconnect( ()=>{
+    bd.disconnect( ()=>{
         process.exit();
     })
 })

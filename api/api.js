@@ -4,6 +4,7 @@ const router = express.Router();
 
 //działa
 router.get("/orzech", async (req, res) => {
+    console.log("AS")
     res.json(orzech.list());
 })
 
