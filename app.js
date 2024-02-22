@@ -1,39 +1,132 @@
-//plik app.js będący początkiem aplikacji
 const express = require('express');
-const api = require("./api/api.js");
-const orzech = require('../orzech/orzech.js');
+const mongoose = require('mongoose');
+const joi = require("joi")  
+const { error } = require("console");
+
 const app = express();
+const BazaDanych = "Orzechy"
+const zrodlo = `mongodb://127.0.0.1:27017/${BazaDanych}`
+const db = mongoose.connect;
 const PORT = 2137;
 
-app.use(express.json());//jasiek na js
+const orzechySchema = joi.object().keys({
+    id: joi.number().integer().min(1).required(),
+    nazwa: joi.string().required(),
+    cena: joi.number().min(0).max(2500).required()
+});
 
-router.get("/orzech", async (req, res) => {
-    res.json(orzech.list());
+const copy = (object) => JSON.parse(JSON.stringify(object));
+//const findOrzechById = (id) => orzechy.find((orzechy) => orzechy.id == id)
+const getOrzechy = (id) => copy(findOrzechById(id))
+//const listaOrzechow = () => copy(orzechy)
+
+
+
+mongoose.connect(zrodlo)
+app.use(express.json());
+
+app.get("/", (req,res)=>{
+    res.send("Mam connection epicko");
+});
+
+app.get("/orzech", async (req,res)=>{
+    try{
+        const collection = db.collection("Siatka")
+        const queryResult = collection.find({});
+        const allOrzechs = await queryResult.toArray();
+        res.send(allOrzechs);
+    } catch(err){
+        console.log(err);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+});
+
+app.get("/orzech/:id", async (req,res)=>{
+    try{
+
+    } catch(err){
+        console.log(err);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+});
+
+app.post("/orzech", async (req,res)=>{
+    try{
+        const newOrzech = req.body
+        const resultValid = orzechySchema.validate(newOrzech)
+        if(resultValid.error){
+            return res.status(400).json({message: "Invalid ID format"})
+        }
+
+        const orzechId = parseInt(req.params.id)
+        if(!isValidDocument(newOrzech)){
+            return res.status(400).json({message: "Invalid document format"})
+        }
+
+        const collection = db.collection("Siatka")
+        const result = await collection.insertOne(newOrzech)
+        if(!result.acknowledged) {
+            return res.status(500).json({message:"Fail to add orzech"})
+        }
+        res.status(201).json({message:"Doc added successfully"})
+    } catch(err){
+        console.log(err);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+});
+
+app.put("/orzech/:id", async (req,res)=>{
+    try{
+        const result = orzechySchema.validate(req.body)
+        if(result.error){
+            return res.status(400).json({message: "Invalid ID format"})
+        }
+
+        const orzechId = parseInt(req.params.id)
+        if(isNaN(orzechId)){
+            return res.status(400).json({message: "Invalid ID format"})
+        }
+
+        if(!isValidDocument(orzechToUpdate)){
+            return res.status(404).json({message: "Invalid docuemnt foramt"})
+        }
+        
+        const collection = db.collection("Siatka")
+        const orzechToUpdate = await collection.replaceOne({id:orzechId},req.body)
+    } catch(err){
+        console.log(err);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+});
+
+
+
+app.delete("/orzech/:id", async (req,res)=>{
+    try{
+        const orzechId = parseInt(req.params.id)
+        if(isNaN(orzechId)){
+            return res.status(400).json({message: "Invalid ID format"})
+        }
+        const collection = db.collection("Siatka")
+        const orzechToDelete = await collection.deleteOne({id:orzechId});
+        if(orzechToDelete.deletedCount === 0) {
+            return res.status(404).json({message: "Document not found"})
+        }
+    } catch(err){
+        console.log(err);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+});
+
+app.listen(PORT, () => {console.log(`Server jest w: Watykanie ${PORT}`)});
+
+process.on('SIGINT', ()=>{
+    console.log("Zamykanie połączenia") ;
+    db.disconnect( ()=>{
+        process.exit();
+    })
 })
 
-router.post("/orzech", async (req,res)=> {
-    res.json(orzech.add(req.body));
-})
-
-router.put("/orzech/:id", async (req,res)=>{
-    req.body.id = parseInt(req.params.id);
-    req.json(orzech.update(req));
-})
- 
-router.get("/orzech/:id", async (req, res)=>{
-    res.json(orzech.get(req.params.id));
-})
-
-router.delete("/orzech/:id", async (req,res)=>{
-    res.json(orzech.delete(parseInt(req.params.id)))
-})
-
-
-app.get("/", (req,res)=>{res.send("KrychaGPT");})
-
-app.listen(PORT, () => {console.log("Serwer jest w: Watykanie")});
-
-
-//pamiętaj hemiku młody
-//wpisuj dobry adres strony
-//(localhost:2137/api/orzech)
+function isValidDocument(doc){
+    return doc && typeof(doc) === 'object' && Object.keys(doc).length > 0; 
+}
