@@ -11,9 +11,9 @@ const zrodlo = `mongodb://127.0.0.1:27017/${BazaDanych}`
 const db = mongoose.connect;
 const PORT = 2137;
 
-const copy = (object) => JSON.parse(JSON.stringify(object));
+//const copy = (object) => JSON.parse(JSON.stringify(object));
 //const findOrzechById = (id) => orzechy.find((orzechy) => orzechy.id == id)
-const getOrzechy = (id) => copy(findOrzechById(id))
+//const getOrzechy = (id) => copy(findOrzechById(id))
 //const listaOrzechow = () => copy(orzechy)
 
 const orzechSchema = new mongoose.Schema({
@@ -50,14 +50,18 @@ app.get("/orzech", async (req,res)=>{
 app.get("/orzech/:id", async (req,res)=>{
     try{
         const orzech = await OrzechModel.findOne({id: parseInt(req.params.id)})
+
         if(!orzech) {
             return res.status(404).json({message: "Docuemnt not found"})
         }
+
         res.json(orzech)
-    } catch(err){
-        console.log(err);
-        res.status(500).json({error: "Internal Server Error"});
-    }}
+    } catch(err)
+        {
+            console.log(err);
+            res.status(500).json({error: "Internal Server Error"});
+        }
+    }
 );
 
 app.post("/orzech", async (req,res)=>{
@@ -113,12 +117,15 @@ app.put("/orzech/:id", async (req,res)=>{
     const orzechToUpdate = req.body
     const orzech = new OrzechModel(orzechToUpdate)
     await orzech.validate()
+
     const result = await OrzechModel.findOneAndUpdate(
         {id: parseInt(req.params.id)}, orzech
     )
+    
     if(!result){
         return res.status(404).json({message: "Cat updated Successfully"})
     }
+
     res.json({message:"doc replaced"})
     } catch(err){
         console.log(err);
@@ -126,7 +133,26 @@ app.put("/orzech/:id", async (req,res)=>{
     }
 });
 
+app.patch("/orzech/:id", async (req,res)=>{
+    try{
+    const orzechToUpdate = req.body
+    const orzech = new OrzechModel(orzechToUpdate)
+    await orzech.validate()
 
+    const result = await OrzechModel.findOneAndUpdate(
+        {id: parseInt(req.params.id)}, orzech
+    )
+    
+    if(!result){
+        return res.status(404).json({message: "Cat updated Successfully"})
+    }
+
+    res.json({message:"doc replaced"})
+    } catch(err){
+        console.log(err);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+});
 
 app.delete("/orzech/:id", async (req,res)=>{
     try{
