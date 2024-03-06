@@ -9,7 +9,7 @@ app.use('/', router)
 const port = 2137
 
 app.listen(port, async ()=> {
-    console.log('listening on port ${port}')
+    console.log(`Server jest w: Watykanie ${port}`)
 })
 
 process.on('exit', ()=>{

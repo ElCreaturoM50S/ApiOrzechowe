@@ -12,6 +12,6 @@ const orzechSchema = new mongoose.Schema({
     cena: {type: Number, required: true},
 })
 
-const OrzechModel = mongoose.model("Orzechy",orzechSchema, "Siatka")
+const orzech = mongoose.model("Orzechy",orzechSchema, "Siatka")
 
-export { db, OrzechModel } 
+export { db, orzech } 
