@@ -24,7 +24,11 @@ export async function zapiszOrzech(body) {
 export async function usunOrzech(id) {
     try {
         const orzechdoZapisania = await orzech.findOneAndDelete({id: id})
+        if (!orzechdoZapisania){
+            return {message:"nie ma takiego orzecha"}
+        } 
         return {message:"usun orzech yupiiii"}
+        
     } catch (err) {
         return { error: err }
     }
@@ -47,6 +51,7 @@ export async function naprawOrzech(id, nazwa, cena) {
     if(result.modifiedCount===0){
         return {message:"No changes to apply"}
     }
+    
     return result
     } catch (err) {
         return { err }
